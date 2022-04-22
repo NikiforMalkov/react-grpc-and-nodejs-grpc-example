@@ -1,0 +1,35 @@
+// protos/entity/entity.proto
+
+syntax = "proto3";
+
+
+service EntitySvc {
+    rpc getAll (GetAllRequest) returns (EntityCollectionResponse);
+    rpc create (CreateEntityRequest) returns (Entity);
+    rpc update (Entity) returns (Entity);
+    rpc delete (DeleteEntityRequest) returns (Entity);
+}
+
+message Entity {
+    string id = 1;
+    string title = 2;  
+    string description = 3;
+}
+
+message CreateEntityRequest {
+    string title = 2;  
+    string description = 3;
+}
+
+message GetAllRequest {
+    string page = 1;
+    string limit = 5;
+}
+
+message DeleteEntityRequest {
+    string id = 1;
+}
+
+message EntityCollectionResponse {
+    repeated Entity entityCollection = 1;
+}

@@ -1,0 +1,13 @@
+
+{
+    "compilerOptions": {
+        "outDir": "dist",
+        "baseUrl": "",
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "allowJs": true,
+        "esModuleInterop": true,
+        "target": "es6",
+        "sourceMap": true
+    },
+}

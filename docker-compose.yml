@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+    service:
+        env_file:
+            "./server/.env"
+        build:
+            context: ./server
+        image: microservice/demo/service
+        restart: "no"
+        environment:
+            - DB_URI=mongodb://mongo:27017/
+            - DB_NAME=example
+        ports:
+            - 9090:9090
+            - 3001:3001
+        depends_on:
+            - mongo
+    
+    mongo:
+        image: mongo
+        restart: "no"
+        environment:
+            MONGO_INITDB_DATABASE: example
+        ports:
+            - 27017:27017
+        volumes:
+            - mongodb:/data/db
+            - mongodb_config:/data/configdb
+        
+    mongo-express:
+        image: mongo-express
+        environment:
+            ME_CONFIG_MONGODB_SERVER: mongo
+            ME_CONFIG_MONGODB_PORT: 27017
+        links:
+            - mongo 
+        depends_on:
+            - mongo
+        ports:
+          - "8081:8081"
+    
+    envoy:
+        build:
+            context: ./docker/envoy
+        volumes:
+            - ./docker/envoy/envoy.yaml:/etc/envoy.yaml
+        expose:
+            - "8080"
+            - "1337"
+        ports:
+            - "8080:8080"
+            - "1337:1337"
+    
+    client-react:
+        build:
+            context: ./client
+        restart: "no"
+        environment:
+            - DB_URI=mongodb://mongo:27017/
+            - DB_NAME=transport
+        ports:
+            - 3000:3000
+        depends_on:
+            - service
+volumes:
+    mongodb:
+    mongodb_config:
