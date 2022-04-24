@@ -4,6 +4,7 @@ import { Db, MongoClient, ObjectId } from "mongodb";
 const dbClient = new MongoClient("mongodb://mongo:27017/");
 let database:Db = null;
 
+//TODO: move to another file
 async function connectDB() {
     try {
         await dbClient.connect();
@@ -66,6 +67,7 @@ export class EntityService {
         entities.deleteOne(query, (err, obj) => {
           if (err) console.log("Error is :", err)  ;
           console.log("1 document deleted");
+          callback(null, null);
         });
     }
 
