@@ -1,7 +1,7 @@
 import { EntitySvcService } from './proto/entity_grpc_pb';
 import { EntityService } from './services/entity';
 import grpc from 'grpc';
-
+import 'dotenv/config';
 
 async function main() {
     const api:EntityService = new EntityService(grpc);
@@ -12,11 +12,9 @@ async function main() {
         delete: api.delete,
         update: api.update,
     });
-    //TODO: move to env
-    let address = "0.0.0.0:9090";
-    server.bindAsync(address, grpc.ServerCredentials.createInsecure(), () => {
+    server.bindAsync(process.env.ADDRESS, grpc.ServerCredentials.createInsecure(), () => {
         server.start();
-        console.log("Server running at " + address);
+        console.log("Server running at " + process.env.ADDRESS);
     });
 }
 
