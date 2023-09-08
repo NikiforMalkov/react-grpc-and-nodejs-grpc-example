@@ -4,7 +4,7 @@ import grpc from 'grpc';
 import 'dotenv/config';
 
 async function main() {
-    const api:EntityService = new EntityService(grpc);
+    const api:EntityService = new EntityService();
     let server = new grpc.Server();
     server.addService(EntitySvcService, {
         getAll: api.getAll,

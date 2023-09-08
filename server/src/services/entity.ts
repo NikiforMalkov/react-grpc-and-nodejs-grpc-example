@@ -1,19 +1,17 @@
 import { client } from '../db/db';
-import { EntityCollectionResponse, Entity} from '../proto/entity_pb';
+import { EntityCollectionResponse, Entity, GetAllRequest, CreateEntityRequest, DeleteEntityRequest} from '../proto/entity_pb';
 import { AnyError, ObjectId } from "mongodb";
-import * as grpc from 'grpc';
+import { ServerUnaryCall, sendUnaryData, status} from 'grpc';
 
 export class EntityService {
 
     table:string = "entities";
-    grpc:any = null;
 
-    constructor( grpc:any) {
-        //console.log('database ', db);
-        this.grpc = grpc;
+    constructor( ) {
+
     }
 
-    getAll(call:any, callback:any) {
+    getAll(call:ServerUnaryCall<GetAllRequest>, callback:sendUnaryData<EntityCollectionResponse>) {
         const entities = client.db().collection("entities");
         entities.find({}).toArray(function(err:any, docs:any) {
             console.log('docs ', docs);
@@ -32,7 +30,7 @@ export class EntityService {
         });
     }
 
-    create (call:any, callback:any) {
+    create (call:ServerUnaryCall<CreateEntityRequest>, callback:sendUnaryData<Entity>) {
         const entities = client.db().collection("entities");
         let entity = { title: call.request.getTitle(), description: call.request.getDescription() }
         entities.insertOne(entity).then((r:any) => {
@@ -44,7 +42,7 @@ export class EntityService {
         });
     }
 
-    delete(call:any, callback:any) {
+    delete(call:ServerUnaryCall<DeleteEntityRequest>, callback:sendUnaryData<Entity>) {
         const entities = client.db().collection("entities");
         let query = { _id: new ObjectId(call.request.getId()) };
         console.log("DELETE ID: ", call.request.getId());
@@ -53,8 +51,9 @@ export class EntityService {
             console.log("Error is :", err)
             return callback(
                 {
-                  message: err ,
-                  code: grpc.status.INTERNAL
+                  name: err.name,
+                  message: err.message ,
+                  code: status.INTERNAL
                 },
                 null,
               ) ;
@@ -64,7 +63,7 @@ export class EntityService {
         });
     }
 
-    update(call:any, callback:any) {
+    update(call:ServerUnaryCall<Entity>, callback:sendUnaryData<Entity>) {
         const entities = client.db().collection("entities");
         let query = { _id: new ObjectId(call.request.getId()) };
         let update = {$set: {"title": call.request.getTitle(), "description":call.request.getDescription()}} 
@@ -74,8 +73,9 @@ export class EntityService {
             console.log("Error is :", err)
             return callback(
                 {
-                  message: err ,
-                  code: grpc.status.INTERNAL
+                  name: err.name,
+                  message: err.message ,
+                  code: status.INTERNAL
                 },
                 null,
               ) ;
