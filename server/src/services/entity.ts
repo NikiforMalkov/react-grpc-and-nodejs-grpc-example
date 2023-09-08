@@ -1,6 +1,7 @@
 import { client } from '../db/db';
 import { EntityCollectionResponse, Entity} from '../proto/entity_pb';
 import { AnyError, ObjectId } from "mongodb";
+import * as grpc from 'grpc';
 
 export class EntityService {
 
@@ -48,7 +49,16 @@ export class EntityService {
         let query = { _id: new ObjectId(call.request.getId()) };
         console.log("DELETE ID: ", call.request.getId());
         entities.deleteOne(query, (err:AnyError, obj:any) => {
-          if (err) console.log("Error is :", err)  ;
+          if (err) {
+            console.log("Error is :", err)
+            return callback(
+                {
+                  message: err ,
+                  code: grpc.status.INTERNAL
+                },
+                null,
+              ) ;
+          } 
           console.log("1 document deleted");
           callback(null, null);
         });
@@ -60,7 +70,16 @@ export class EntityService {
         let update = {$set: {"title": call.request.getTitle(), "description":call.request.getDescription()}} 
         console.log("UPDATE ID: ", call.request.getId());
         entities.updateOne(query, update, (err:AnyError, obj:any) => {
-          if (err) console.log("Error is :", err)  ;
+          if (err) {
+            console.log("Error is :", err)
+            return callback(
+                {
+                  message: err ,
+                  code: grpc.status.INTERNAL
+                },
+                null,
+              ) ;
+          } 
           console.log("1 document updated");
           let resp = new Entity();
           resp.setId(call.request.getId());
