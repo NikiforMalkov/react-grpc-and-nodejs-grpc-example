@@ -16,6 +16,9 @@ services:
             - 3001:3001
         depends_on:
             - mongo
+        volumes:
+            - ./server:/usr/src/app
+            - /usr/src/app/node_modules/
     
     mongo:
         image: mongo
@@ -63,6 +66,9 @@ services:
             - 3000:3000
         depends_on:
             - service
+        volumes:
+            - ./client:/usr/src/app
+            - /usr/src/app/node_modules/
 volumes:
     mongodb:
     mongodb_config:

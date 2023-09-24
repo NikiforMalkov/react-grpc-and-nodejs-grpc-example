@@ -6,4 +6,4 @@ RUN npm ci
 COPY . .
 RUN npm run tsc 
 
-CMD [ "node", "dist/index.js" ]
+CMD [ "npm", "start" ]
